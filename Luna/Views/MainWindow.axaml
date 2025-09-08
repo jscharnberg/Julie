@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Luna.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="AvaloniaApplication2">
+test
+	<!--<Window.DataContext>
+		<vm:LogViewModel2/>
+	</Window.DataContext>
+
+	<Grid RowDefinitions="Auto,*">
+		<Button Content="Load Log" Margin="5" Click="OnLoadLogClick"/>
+		<DataGrid Items="{Binding LogLevels}" Grid.Row="1" AutoGenerateColumns="False" Margin="5">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Log Level" Binding="{Binding LevelName}"/>
+				<DataGridTextColumn Header="Count" Binding="{Binding Count}"/>
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>-->
+</Window>
