@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luna", "AvaloniaApplication2\Luna.csproj", "{7A804683-0B06-4E2F-84B5-B74EC45D2F76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luna", "Luna\Luna.csproj", "{7A804683-0B06-4E2F-84B5-B74EC45D2F76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luna.Core", "Luna.Core\Luna.Core.csproj", "{6EB938E4-49D1-4A8F-6435-341DE6B6687B}"
 EndProject
