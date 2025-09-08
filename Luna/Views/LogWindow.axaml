@@ -2,15 +2,109 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" 
+		Width="1500"
         x:Class="Luna.LogWindow"
+		        x:DataType="vm:LogViewModel"
 		        xmlns:vm="using:Luna.ViewModels"
         Title="LogWindow">
-	<Design.DataContext>
+	<Window.DataContext>
 		<vm:LogViewModel/>
-	</Design.DataContext>
-Logs
-	<!--<DockPanel>
+	</Window.DataContext>
+	
+	<!--"colors": {
+  "editor.background": "#002C56",
+  "editor.foreground": "#FFFFFF",
+  "editorCursor.foreground": "#FC4C02",
+  "editor.lineHighlightBackground": "#003A6E",
+  "editor.selectionBackground": "#008E97"
+}-->
+
+		
+	<DockPanel Background="#121c26">
+		
+		<Border DockPanel.Dock="Top" Padding="10" 
+        BorderThickness="0,0,0,1" 
+        BorderBrush="#1c2630">
+    <TextBlock Text="Projektname" Foreground="White" FontWeight="Bold" FontSize="16"/>
+</Border>
+
+		<!-- Footer -->
+        <!--<Border DockPanel.Dock="Bottom"  Padding="10"
+				BorderThickness="0,1,0,0" 
+        BorderBrush="#1c2630">
+            <TextBlock Text="© 2025 Mein Projekt" Foreground="White" HorizontalAlignment="Center"/>
+        </Border>-->
+		<Border DockPanel.Dock="Bottom" Padding="10"
+                BorderThickness="0,1,0,0" 
+                BorderBrush="#1c2630">
+            <TextBlock Text="{Binding FooterText}" Foreground="White" HorizontalAlignment="Center"/>
+        </Border>
+					
+        <!-- Toolbar -->
+        <!--<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
+            <Button Content="Load Log"
+                    Command="{Binding LoadLogsCommand}"
+                    CommandParameter="test.log"
+                    Background="#008E97" Foreground="White" Padding="8,4"/>
+            <TextBox Width="200" Watermark="Filter logs..." />
+        </StackPanel>-->
+			<StackPanel DockPanel.Dock="Left" Width="150" Margin="0, 10, 0, 0" Spacing="10">
+				<Button Content="Load Log"
+                    Command="{Binding LoadLogsAsync}"
+						            HorizontalAlignment="Center"
+                    Background="#008E97" Foreground="White" Padding="8,4"/>
+            <!--<Button Content="Settings" Background="#008E97" Foreground="White"/>
+            <Button Content="About" Background="#008E97" Foreground="White"/>-->
+        </StackPanel>
+
+	<ListBox ItemsSource="{Binding Logs}"
+         Background="#0c161f"
+         BorderThickness="1"
+         BorderBrush="#1c2630"
+         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
+    <ListBox.ItemTemplate>
+        <DataTemplate>
+            <SelectableTextBlock TextWrapping="Wrap" >
+				<!-- Zeile -->
+                        <Run Text="{Binding Line}" Foreground="#AAAAAA"/>
+                        <Run Text="  "/>
+				
+				<!-- Timestamp -->
+				<Run Text="[" Foreground="#4FC3F7"/>
+                <Run Text="{Binding Stamp}" Foreground="#4FC3F7"/>
+                <Run Text="]" Foreground="#4FC3F7"/>
+                <Run Text="  "/>
+				
+                <!-- Level -->
+				<Run Text="[" Foreground="#4FC3F7"/>
+                <Run Text="{Binding LogType}" Foreground="#4FC3F7"/>
+                <Run Text="]" Foreground="#4FC3F7"/>
+                <Run Text="  "/>
+                                
+                <!-- File -->
+                <Run Text="{Binding File}" Foreground="White"/>
+                <Run Text="  "/>
+                
+                <!-- Line -->
+                <Run Text="{Binding LogLine}" Foreground="White"/>
+                <Run Text="  "/>
+                
+                <!-- Method -->
+                <Run Text="{Binding Method}" Foreground="#FC4C02"/>
+                <Run Text="  "/>
+                
+                <!-- Message -->
+                <Run Text="{Binding Text}" Foreground="White"/>
+            </SelectableTextBlock>
+        </DataTemplate>
+    </ListBox.ItemTemplate>
+</ListBox>
+
+    </DockPanel>
+
+<!--<DockPanel>
 		 Toolbar 
 		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
 			<Button Content="Load Log"
