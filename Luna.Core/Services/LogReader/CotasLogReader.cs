@@ -9,13 +9,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Luna.Core.Services
+namespace Luna.Core.Services.LogReader
 {
-    public class LogReader
+    public class CotasLogReader : ILogReader
     {
         public IEnumerable<LogEntry> ReadFile(string filePath)
         {
-            foreach (var line in File.ReadLines(filePath))
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var sr = new StreamReader(fs);
+
+            string? line;
+
+            while ((line = sr.ReadLine()) != null)
             {
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
@@ -91,7 +96,7 @@ namespace Luna.Core.Services
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.None,
                         out var dt) ? dt : DateTime.MinValue,
-                    File = parts[2],
+                    FileName = parts[2],
                     LogLine = int.TryParse(parts[3], out var lineNr) ? lineNr : 0,
                     Thread = parts[4],
                     Method = method,
@@ -103,36 +108,8 @@ namespace Luna.Core.Services
         private static LogLevel IndexToLogLevel(int index)
         {
             var levels = Enum.GetValues<LogLevel>().Where(l => l != LogLevel.Null).ToArray();
-            return (index >= 0 && index < levels.Length) ? levels[index] : LogLevel.Null;
+            return index >= 0 && index < levels.Length ? levels[index] : LogLevel.Null;
         }
 
-        private static int LogTypeToIndex(LogLevel logType)
-        {
-            int lt = (int)logType;
-            int i = 1;
-
-            if (lt == 0)
-            {
-                return -1;
-            }
-            if (lt == 1)
-            {
-                return 0;
-            }
-
-            while ((lt /= 2) > 1)
-            {
-                i++;
-            }
-
-            var levels = Enum.GetValues<LogLevel>();
-            var maxLevel = (int)levels[^1]; //letzter eintrag
-
-            if (i >= maxLevel)
-            {
-                i = maxLevel - 1;
-            }
-            return i;
-        }
     }
 }

@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaXaml Remove="Assets\Themes\DolphinsDark.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.5" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.5" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.5" />
@@ -26,10 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\Themes\" />
+    <ProjectReference Include="..\Luna.Core\Luna.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Luna.Core\Luna.Core.csproj" />
+    <AvaloniaResource Update="Assets\Themes\DolphinsDark.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
   </ItemGroup>
 </Project>

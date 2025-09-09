@@ -11,12 +11,16 @@ namespace Luna.Core.Models
     public class LogEntry
     {
         public int Line { get; set; }   
+        public string SourceFileName { get; set; }
         public LogLevel LogType { get; set; }
         public DateTime Stamp { get; set; }
-        public string File { get; set; }
+        public string FileName { get; set; }
         public int LogLine { get; set; }
         public string Thread { get; set; }
         public string Method { get; set; }
         public string Text { get; set; }
+
+        public string SourceFileAndLine => $"{SourceFileName}({Line})";
+        public string LogFileAndLine => $"{FileName}: {LogLine}";
     }
 }
