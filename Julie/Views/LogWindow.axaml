@@ -44,7 +44,7 @@
 				<StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="5">
 					<Image Source="avares://Julie/Assets/Images/Logo_Orange_Transparent.png"
 						   Width="20" Height="20" Stretch="Uniform"/>
-					<TextBlock Text="Julie" Foreground="#AAAAAA"
+					<TextBlock Text="{Binding ProjectName}" Foreground="#AAAAAA"
 							   FontWeight="Bold" FontSize="16"/>
 				</StackPanel>
 

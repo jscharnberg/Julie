@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Luna.ViewModels;
+using Julie.ViewModels;
 
-namespace Luna.Views
+namespace Julie.Views
 {
     public partial class MainWindow : Window
     {

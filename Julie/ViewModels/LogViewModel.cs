@@ -20,6 +20,7 @@ namespace Julie.ViewModels
 {
     public partial class LogViewModel : ObservableObject
     {
+        public string ProjectName { get; } = AppDomain.CurrentDomain.FriendlyName;
         //private readonly ILogReader _logReader;
         [ObservableProperty]
         private ObservableCollection<LogReaderOption> logReaderOptions = new();

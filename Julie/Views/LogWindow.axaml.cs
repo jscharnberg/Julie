@@ -3,9 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree; // <- WICHTIG
-using Luna.ViewModels;
+using Julie.ViewModels;
 
-namespace Luna;
+namespace Julie;
 
 public partial class LogWindow : Window
 {

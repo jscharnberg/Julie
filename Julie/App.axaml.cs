@@ -4,15 +4,15 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
-using Luna;
-using Luna.ViewModels;
-using Luna.Views;
+using Julie;
+using Julie.ViewModels;
+using Julie.Views;
 using System;
 using System.IO;
 using System.Linq;
 
 
-namespace Luna
+namespace Julie
 {
     public partial class App : Application
     {
