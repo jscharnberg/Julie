@@ -6,6 +6,7 @@
 - hotkeys
 - Lokalisierung (erstmal alles englisch)
 - wenn logger datei nicht verarbeiten kann, dann meldung + stopp zu lesen
+- logpfade nach OS 
 
 
 
