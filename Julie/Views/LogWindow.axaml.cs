@@ -5,7 +5,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree; // <- WICHTIG
 using Julie.ViewModels;
 
-namespace Julie;
+namespace Julie.Views;
 
 public partial class LogWindow : Window
 {
@@ -28,4 +28,6 @@ public partial class LogWindow : Window
             }
         };
     }
+
+    
 }

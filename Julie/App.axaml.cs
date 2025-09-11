@@ -5,8 +5,11 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
 using Julie;
+using Julie.Core.Models;
+using Julie.Core.Services;
 using Julie.ViewModels;
 using Julie.Views;
+using Serilog;
 using System;
 using System.IO;
 using System.Linq;
@@ -25,12 +28,11 @@ namespace Julie
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-                // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
+                var settings = JulieSettingsManager.Load();
                 DisableAvaloniaDataAnnotationValidation();
                 desktop.MainWindow = new LogWindow
                 {
-                    DataContext = new LogViewModel(),
+                    DataContext = new LogViewModel(settings),
                 };
             }
 

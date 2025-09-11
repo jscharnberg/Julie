@@ -15,7 +15,7 @@ namespace Julie.Core.Models
         public LogLevel LogType { get; set; }
         public DateTime Stamp { get; set; }
         public string FileName { get; set; }
-        public int LogLine { get; set; }
+        public int? LogLine { get; set; }
         public string Thread { get; set; }
         public string Method { get; set; }
         public string Text { get; set; }

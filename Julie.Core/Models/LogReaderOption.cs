@@ -11,5 +11,7 @@ namespace Julie.Core.Models
     {
         public string Name { get; set; } = string.Empty;
         public ILogReader Reader { get; set; } = null!;
+
+        public string? TemplatePattern { get; set; } // nur für Serilog
     }
 }

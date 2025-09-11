@@ -86,22 +86,22 @@ namespace Julie.Core.Services.LogReader
                     }
                 }
 
-
                 yield return new LogEntry
                 {
                     LogType = logLevel,
                     Stamp = DateTime.TryParseExact(
-                        parts[0],
-                        "dd.MM HH:mm:ss",
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out var dt) ? dt : DateTime.MinValue,
+                    parts[0],
+                    "dd.MM HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var dt) ? dt : DateTime.MinValue,
                     FileName = parts[2],
                     LogLine = int.TryParse(parts[3], out var lineNr) ? lineNr : 0,
                     Thread = parts[4],
                     Method = method,
                     Text = text
                 };
+
             }
         }
 

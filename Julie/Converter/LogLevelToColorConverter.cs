@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Data.Converters;
+using Serilog;
 
 namespace Julie.Converter
 {

@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+		        xmlns:vm="using:Julie.ViewModels"
+        x:DataType="vm:SettingsViewModel"
+        Width="800" Height="500"
+        x:Class="Julie.Views.SettingsWindow"
+        Title="Settings">
+	
+	<StackPanel Margin="20" Spacing="10">
+		<TextBlock Text="Logger auswählen:"/>
+		<ComboBox ItemsSource="{Binding AvailableLoggers}"
+                  SelectedItem="{Binding SelectedLogger}" />
+
+		<TextBlock Text="Template:"/>
+		<TextBox Text="{Binding Template}" AcceptsReturn="True" Height="100" TextWrapping="Wrap"/>
+
+		<StackPanel Orientation="Horizontal" Spacing="10">
+			<Button Content="Speichern" Command="{Binding Save}"/>
+			<Button Content="Zurücksetzen" Command="{Binding Reset}"/>
+		</StackPanel>
+
+		<TextBlock Text="Vorlage auswählen:"/>
+		<!--<ComboBox ItemsSource="{Binding Templates}" SelectedItem="{Binding SelectedTemplate}" DisplayMemberPath="Name"/>
+		<TextBox Text="{Binding SelectedTemplate.Content}" AcceptsReturn="True" Height="100"/>
+		<StackPanel Orientation="Horizontal" Spacing="10">
+			<Button Content="Neu" Command="{Binding AddTemplate}"/>
+			<Button Content="Löschen" Command="{Binding DeleteTemplate}"/>
+			<Button Content="Speichern" Command="{Binding SaveTemplate}"/>
+		</StackPanel>-->
+		<TextBlock Text="Sprache:"/>
+		<ComboBox ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage}"/>
+		<Button Content="Übernehmen" Command="{Binding ChangeLanguage}"/>
+		<TextBlock Text="Theme:"/>
+		<!--<ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding SelectedTheme}"/>
+		<Button Content="Hinzufügen" Command="{Binding AddTheme}"/>
+		<Button Content="Übernehmen" Command="{Binding ApplyTheme}"/>-->
+
+	</StackPanel>
+</Window>

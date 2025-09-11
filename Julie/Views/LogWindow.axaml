@@ -4,11 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Width="1500"
-        x:Class="Julie.LogWindow"
+        x:Class="Julie.Views.LogWindow"
         x:DataType="vm:LogViewModel"
         xmlns:vm="using:Julie.ViewModels"
         xmlns:converter="using:Julie.Converter"
-		Icon="avares://Julie/Assets/Logo_Orange_Transparent.ico"
         Title="{Binding FooterText}">
 
 	<Window.Styles>
@@ -58,7 +57,7 @@
 					  IsChecked="{Binding AutoUpdate, Mode=TwoWay}"
 					  IsEnabled="{Binding IsAutoUpdateEnabled}"
 					  Foreground="#AAAAAA" VerticalAlignment="Center"/>
-					<Button Width="24" Height="24" Padding="0" Background="Transparent" BorderBrush="Transparent">
+					<Button Width="24" Height="24" Padding="0" Background="Transparent" BorderBrush="Transparent" Command="{Binding OpenSettingsCommand}">
 						<Image Source="avares://Julie/Assets/Images/settings.png" Stretch="Uniform"/>
 					</Button>
 				</StackPanel>
@@ -82,7 +81,7 @@
 			<!-- LogLevel Filter -->
 			<StackPanel Spacing="6" Margin="10,0,0,0">
 				<CheckBox Content="INFO" IsChecked="{Binding FilterInfo}" Foreground="#4FC3F7"/>
-				<CheckBox Content="WARN" IsChecked="{Binding FilterWarn}" Foreground="#e6a81d"/>
+				<CheckBox Content="WARN" IsChecked="{Binding FilterWarn}" Foreground="#e6721d"/>
 				<CheckBox Content="ERROR" IsChecked="{Binding FilterError}" Foreground="#FF3B30"/>
 				<CheckBox Content="DEBUG" IsChecked="{Binding FilterDebug}" Foreground="#AAAAAA"/>
 			</StackPanel>

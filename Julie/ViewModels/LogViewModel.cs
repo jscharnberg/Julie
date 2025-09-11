@@ -6,6 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using Julie.Core.Enums;
 using Julie.Core.Models;
 using Julie.Core.Services.LogReader;
+using Julie.Views;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +15,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tmds.DBus.Protocol;
 
@@ -21,7 +24,8 @@ namespace Julie.ViewModels
     public partial class LogViewModel : ObservableObject
     {
         public string ProjectName { get; } = AppDomain.CurrentDomain.FriendlyName;
-        //private readonly ILogReader _logReader;
+        private readonly ILogger _logger = Log.ForContext<LogViewModel>();
+
         [ObservableProperty]
         private ObservableCollection<LogReaderOption> logReaderOptions = new();
 
@@ -88,11 +92,47 @@ namespace Julie.ViewModels
         [ObservableProperty]
         private string footerText = string.Empty;
 
-        public LogViewModel()
+        public LogViewModel(JulieSettings settings)
         {
-            LogReaderOptions.Add(new LogReaderOption { Name = "Cotas Logger", Reader = new CotasLogReader() });
+            foreach (var loggerName in settings.AvailableLoggers)
+            {
+                switch (loggerName)
+                {
+                    case "Cotas":
+                        LogReaderOptions.Add(new LogReaderOption { Name = "Cotas Logger", Reader = new CotasLogReader() });
+                        break;
 
-            SelectedLogReader = LogReaderOptions.FirstOrDefault();
+                    case "Serilog":
+                        LogReaderOptions.Add(new LogReaderOption
+                        {
+                            Name = "Serilog",
+                            Reader = new SerilogLogReader(settings.Template,
+                                RegexOptions.Compiled | RegexOptions.CultureInvariant)
+                        });
+                        break;
+                }
+            }
+
+            SelectedLogReader = LogReaderOptions.FirstOrDefault(r => r.Name == settings.LoggerType)
+                            ?? LogReaderOptions.First();
+            //            LogReaderOptions.Add(new LogReaderOption { Name = "Cotas Logger", Reader = new CotasLogReader() });
+
+            //            LogReaderOptions.Add(new LogReaderOption
+            //            {
+            //                Name = "Serilog",
+            //                Reader = new SerilogLogReader(
+            //            @"^(?<Timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [+-]\d{2}:\d{2}) " +
+            //@"\[(?<Level>[A-Z]{3})\] " +
+            //@"\((?<SourceContext>.*?)\) " +           // SourceContext kann leer sein
+            //@"\((?<Method>.*?):?(?<Line>\d*)\) " +  // Method und Line optional
+            //@"(?<Message>.*)$"
+            //,
+            //        RegexOptions.Compiled | RegexOptions.CultureInvariant
+            //    )
+            //            });
+
+
+            //SelectedLogReader = LogReaderOptions[0];
 
             Logs.CollectionChanged += (s, e) => OnLogsChanged();
 
@@ -100,11 +140,11 @@ namespace Julie.ViewModels
             this.PropertyChanged += (s, e) =>
             {
                 if(e.PropertyName is nameof(SearchText)
-        or nameof(FilterInfo)
-        or nameof(FilterWarn)
-        or nameof(FilterError)
-        or nameof(FilterDebug))
-    {
+                    or nameof(FilterInfo)
+                    or nameof(FilterWarn)
+                    or nameof(FilterError)
+                    or nameof(FilterDebug))
+                {
                     UpdateFilteredLogs();
                 }
             };
@@ -133,18 +173,26 @@ namespace Julie.ViewModels
 
         private void AppendNewLines(string filePath)
         {
-            var lines = SelectedLogReader!.Reader.ReadFile(filePath).ToList();
-            int startLine = Logs.Count + 1;
-
-            foreach (var entry in lines.Skip(startLine - 1))
+            try
             {
-                entry.Line = Logs.Count + 1;
-                entry.SourceFileName = Path.GetFileName(filePath);
-                Logs.Add(entry);
-            }
+                var lines = SelectedLogReader!.Reader.ReadFile(filePath).ToList();
+                int startLine = Logs.Count + 1;
 
-            // Optional AutoScroll
-            AutoUpdateRequested?.Invoke(this, EventArgs.Empty);
+                foreach (var entry in lines.Skip(startLine - 1))
+                {
+                    entry.Line = Logs.Count + 1;
+                    entry.SourceFileName = Path.GetFileName(filePath);
+                    Logs.Add(entry);
+                }
+
+                _logger.Information($"Neue Zeilen aus Datei {filePath} hinzugefügt");
+                
+                AutoUpdateRequested?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex) 
+            {
+                _logger.Error(ex, $"Fehler beim Anhängen neuer Zeilen aus {filePath}");
+            }
         }
 
         private void WatchFile(string filePath)
@@ -207,74 +255,114 @@ namespace Julie.ViewModels
 
         private async Task LoadLogsFromFilesAsync(IEnumerable<string> files)
         {
-            if (SelectedLogReader == null || files == null)
-                return;
-
-            Logs.Clear();
-
-            foreach (var file in files)
+            try
             {
-                int lineNumber = 1;
-                foreach (var entry in SelectedLogReader.Reader.ReadFile(file))
+                if (SelectedLogReader == null || files == null)
+                    return;
+
+                Logs.Clear();
+
+                foreach (var file in files)
                 {
-                    entry.Line = lineNumber++;
-                    entry.SourceFileName = Path.GetFileName(file);
-                    Logs.Add(entry);
+                    int lineNumber = 1;
+                    foreach (var entry in SelectedLogReader.Reader.ReadFile(file))
+                    {
+                        entry.Line = lineNumber++;
+                        entry.SourceFileName = Path.GetFileName(file);
+                        Logs.Add(entry);
+                    }
                 }
+                _logger.Information("Logs aus {Count} Dateien geladen", files.Count());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Fehler beim Laden von Log-Dateien");
+            }
+            
+        }
+
+        [RelayCommand]
+        private async Task OpenSettings()
+        {
+            var settingsWindow = new SettingsWindow();
+
+            // Prüfen, ob es ein MainWindow gibt (damit Dialog korrekt angezeigt wird)
+            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                desktop.MainWindow is Window mainWindow)
+            {
+                await settingsWindow.ShowDialog(mainWindow);
+            }
+            else
+            {
+                settingsWindow.Show(); // fallback, falls kein MainWindow
             }
         }
 
         [RelayCommand]
         public async Task LoadLogsAsync(string? filePath = null)
         {
-            if (string.IsNullOrEmpty(filePath))
+            try
             {
-                var dlg = new OpenFileDialog
+                if (string.IsNullOrEmpty(filePath))
                 {
-                    AllowMultiple = false
-                };
-                dlg.Filters.Add(new FileDialogFilter { Name = "Log Files", Extensions = { "tlg", "log" } });
+                    var dlg = new OpenFileDialog
+                    {
+                        AllowMultiple = false
+                    };
+                    dlg.Filters.Add(new FileDialogFilter { Name = "Log Files", Extensions = { "tlg", "log" } });
 
 
-                var lifetime = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
-                var window = lifetime.MainWindow;
-                var result = await dlg.ShowAsync(window);
+                    var lifetime = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
+                    var window = lifetime.MainWindow;
+                    var result = await dlg.ShowAsync(window);
 
-                if (result == null || result.Length == 0)
-                    return;
+                    if (result == null || result.Length == 0)
+                        return;
 
 
-                SetFolderLoaded(false);
+                    SetFolderLoaded(false);
 
-                filePath = result[0];
+                    filePath = result[0];
+                }
+
+                CurrentFilePath = filePath;
+                await LoadLogsFromFilesAsync(new[] { filePath });
+
+                WatchFile(filePath);
             }
-
-            CurrentFilePath = filePath;
-            await LoadLogsFromFilesAsync(new[] { filePath });
-
-            WatchFile(filePath);
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Fehler beim Laden einer Log Datei");
+            }
         }
 
         [RelayCommand]
         public async Task LoadLogFolderAsync()
         {
+            try
+            {
+                var dlg = new OpenFolderDialog { Title = "Ordner mit Log-Dateien auswählen" };
+                var lifetime = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
+                var window = lifetime.MainWindow;
 
-            var dlg = new OpenFolderDialog { Title = "Ordner mit Log-Dateien auswählen" };
-            var lifetime = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
-            var window = lifetime.MainWindow;
+                var folderPath = await dlg.ShowAsync(window);
+                if (string.IsNullOrEmpty(folderPath))
+                    return;
 
-            var folderPath = await dlg.ShowAsync(window);
-            if (string.IsNullOrEmpty(folderPath))
-                return;
+                CurrentFilePath = folderPath;
+                SetFolderLoaded(true);
 
-            CurrentFilePath = folderPath;
-            SetFolderLoaded(true);
+                var logFiles = Directory.GetFiles(folderPath, "*.log")
+                                        .Concat(Directory.GetFiles(folderPath, "*.tlg"));
 
-            var logFiles = Directory.GetFiles(folderPath, "*.log")
-                                    .Concat(Directory.GetFiles(folderPath, "*.tlg"));
+                await LoadLogsFromFilesAsync(logFiles);
 
-            await LoadLogsFromFilesAsync(logFiles);
-            //WatchFolder(folderPath);
+                _logger.Information($"Log Ordner {folderPath} mit {logFiles.Count()} Dateien geladen");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Fehler beim Laden eines Log-Ordners");
+            }
         }
 
         
