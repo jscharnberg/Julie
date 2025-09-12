@@ -26,37 +26,40 @@
 
 	<Window.Resources>
 		<converter:LogLevelToColorConverter x:Key="LogLevelGroupToBrush"/>
+		<converter:ResourceConverter x:Key="Res"/>
 	</Window.Resources>
 
-	<DockPanel Background="#121c26">
-
+	<DockPanel >
 		<!-- Header -->
-		<Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="#1c2630">
+		<Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="200"/>
 					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="200"/>
+					<ColumnDefinition Width="500"/>
 				</Grid.ColumnDefinitions>
 
 				<!-- Projektname -->
 				<StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="5">
 					<Image Source="avares://Julie/Assets/Images/Logo_Orange_Transparent.png"
 						   Width="20" Height="20" Stretch="Uniform"/>
-					<TextBlock Text="{Binding ProjectName}" Foreground="#AAAAAA"
+					<TextBlock Text="{Binding ProjectName}"
 							   FontWeight="Bold" FontSize="16"/>
 				</StackPanel>
 
 
-				<TextBox Grid.Column="1" HorizontalAlignment="Stretch" Watermark="Search logs..."
+				<TextBox x:Name="SearchBox" Grid.Column="1" HorizontalAlignment="Stretch" Watermark="Search logs..."
                  Text="{Binding SearchText, Mode=TwoWay}" VerticalAlignment="Center" Margin="0, 0, 250, 0"/>
 
 				<!-- Rechts: AutoScroll Checkbox + Settings Icon -->
 				<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="15" HorizontalAlignment="Right">
-					<CheckBox Content="Auto Update" x:Name="AutoUpdateBtn"
-					  IsChecked="{Binding AutoUpdate, Mode=TwoWay}"
-					  IsEnabled="{Binding IsAutoUpdateEnabled}"
-					  Foreground="#AAAAAA" VerticalAlignment="Center"/>
+					<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+						<TextBlock Text="Auto Update" VerticalAlignment="Center"/>
+						<ToggleSwitch
+							IsChecked="{Binding AutoUpdate, Mode=TwoWay}"
+							IsEnabled="{Binding IsAutoUpdateEnabled}" />
+					</StackPanel>
+
 					<Button Width="24" Height="24" Padding="0" Background="Transparent" BorderBrush="Transparent" Command="{Binding OpenSettingsCommand}">
 						<Image Source="avares://Julie/Assets/Images/settings.png" Stretch="Uniform"/>
 					</Button>
@@ -65,46 +68,44 @@
 		</Border>
 
 		<!-- Footer -->
-		<Border DockPanel.Dock="Bottom" Padding="8" BorderThickness="0,1,0,0" BorderBrush="#1c2630">
-			<TextBlock Text="{Binding FooterText}" Foreground="#AAAAAA" HorizontalAlignment="Center"/>
+		<Border DockPanel.Dock="Bottom" Padding="8" BorderThickness="0,1,0,0">
+			<TextBlock Text="{Binding FooterText}" HorizontalAlignment="Center"/>
 		</Border>
 
 		<!-- Toolbar (Sidebar) -->
 		<StackPanel DockPanel.Dock="Left" Width="200" Margin="0,10,0,0" Spacing="10">
 			<Button Content="Load Log" Command="{Binding LoadLogsAsync}" HorizontalAlignment="Center"
-					Background="#1b7784" Foreground="White" Padding="8,4"/>
+					Foreground="White" Padding="8,4"/>
 			<Button Content="Load Log Folder" Command="{Binding LoadLogFolderAsync}" HorizontalAlignment="Center"
-					Background="#1b7784" Foreground="White" Padding="8,4"/>
+					Foreground="White" Padding="8,4"/>
 
-			<TextBlock Text="Filter Levels:" Foreground="#AAAAAA" HorizontalAlignment="Left" FontWeight="Bold" Margin="10,20,0,0"/>
+			<TextBlock Text="Filter Levels:" HorizontalAlignment="Left" FontWeight="Bold" Margin="10,20,0,0"/>
 
 			<!-- LogLevel Filter -->
 			<StackPanel Spacing="6" Margin="10,0,0,0">
-				<CheckBox Content="INFO" IsChecked="{Binding FilterInfo}" Foreground="#4FC3F7"/>
-				<CheckBox Content="WARN" IsChecked="{Binding FilterWarn}" Foreground="#e6721d"/>
-				<CheckBox Content="ERROR" IsChecked="{Binding FilterError}" Foreground="#FF3B30"/>
-				<CheckBox Content="DEBUG" IsChecked="{Binding FilterDebug}" Foreground="#AAAAAA"/>
+				<CheckBox Content="INFO" IsChecked="{Binding FilterInfo}" />
+				<CheckBox Content="WARN" IsChecked="{Binding FilterWarn}"/>
+				<CheckBox Content="ERROR" IsChecked="{Binding FilterError}" />
+				<CheckBox Content="DEBUG" IsChecked="{Binding FilterDebug}" />
 			</StackPanel>
 		</StackPanel>
 
 		<!-- Logs -->
-		<DockPanel Background="#121c26">
+		<DockPanel>
 			<!-- Column headers -->
-			<Border DockPanel.Dock="Top" Padding="6" BorderThickness="0,0,0,1" BorderBrush="#1c2630">
+			<Border DockPanel.Dock="Top" Padding="6" BorderThickness="0,0,0,1" >
 				<Grid ColumnDefinitions="170,190,100,200,300,*">
-					<TextBlock Grid.Column="0" Text="Datei(Zeile)" Foreground="#AAAAAA" FontWeight="SemiBold"/>
-					<TextBlock Grid.Column="1" Text="Timestamp" Foreground="#AAAAAA" FontWeight="SemiBold"/>
-					<TextBlock Grid.Column="2" Text="Level" Foreground="#AAAAAA" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-					<TextBlock Grid.Column="3" Text="File" Foreground="#AAAAAA" FontWeight="SemiBold"/>
-					<TextBlock Grid.Column="4" Text="Method" Foreground="#AAAAAA" FontWeight="SemiBold"/>
-					<TextBlock Grid.Column="5" Text="Message" Foreground="#AAAAAA" FontWeight="SemiBold"/>
+					<TextBlock Grid.Column="0" Text="Datei(Zeile)" FontWeight="SemiBold"/>
+					<TextBlock Grid.Column="1" Text="Timestamp" FontWeight="SemiBold"/>
+					<TextBlock Grid.Column="2" Text="Level" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+					<TextBlock Grid.Column="3" Text="File" FontWeight="SemiBold"/>
+					<TextBlock Grid.Column="4" Text="Method" FontWeight="SemiBold"/>
+					<TextBlock Grid.Column="5" Text="Message"  FontWeight="SemiBold"/>
 				</Grid>
 			</Border>
 
 			<!-- Log List -->
 			<ListBox ItemsSource="{Binding FilteredLogs}"
-                     Background="#0c161f"
-                     BorderThickness="0"
                      x:Name="LogList"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -115,10 +116,10 @@
 						<Setter Property="Padding" Value="4"/>
 					</Style>
 					<Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-						<Setter Property="Background" Value="#1b7784"/>
+						<Setter Property="Background" />
 					</Style>
 					<Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-						<Setter Property="Background" Value="#12343c"/>
+						<Setter Property="Background"/>
 					</Style>
 				</ListBox.Styles>
 
@@ -128,7 +129,7 @@
 							<!-- Datei(Zeile) -->
 							<SelectableTextBlock Grid.Column="0" Text="{Binding SourceFileAndLine}" Foreground="#888888"/>
 							<!-- Timestamp -->
-							<SelectableTextBlock Grid.Column="1" Text="{Binding Stamp}" Foreground="#1b7784"/>
+							<SelectableTextBlock Grid.Column="1" Text="{Binding Stamp}" />
 							<!-- Level -->
 							<SelectableTextBlock Grid.Column="2" Text="{Binding LogType}"
                                                  Foreground="{Binding LogType, Converter={StaticResource LogLevelGroupToBrush}}"/>

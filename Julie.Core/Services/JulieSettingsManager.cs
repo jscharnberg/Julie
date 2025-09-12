@@ -20,8 +20,7 @@ namespace Julie.Core.Services
             {
                 var defaultSettings = new JulieSettings
                 {
-                    LoggerType = "Serilog",
-                    Template = @"^(?<Timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [+-]\d{2}:\d{2}) \[(?<Level>[A-Z]{3})\] \((?<SourceContext>.*?)\) \((?<Method>.*?)\) (?<Message>.*)$"
+                    SeriLogTemplate = @"^(?<Timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [+-]\d{2}:\d{2}) \[(?<Level>[A-Z]{3})\] \((?<SourceContext>.*?)\) \((?<Method>.*?)\) (?<Message>.*)$"
                 };
 
                 // Datei-Ordner sicherstellen
@@ -44,8 +43,7 @@ namespace Julie.Core.Services
                 // Fallback: Default zurückgeben, falls Datei beschädigt
                 return new JulieSettings
                 {
-                    LoggerType = "Serilog",
-                    Template = @"^(?<Timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [+-]\d{2}:\d{2}) \[(?<Level>[A-Z]{3})\] \((?<SourceContext>.*?)\) \((?<Method>.*?)\) (?<Message>.*)$"
+                    SeriLogTemplate = @"^(?<Timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [+-]\d{2}:\d{2}) \[(?<Level>[A-Z]{3})\] \((?<SourceContext>.*?)\) \((?<Method>.*?)\) (?<Message>.*)$"
                 };
             }
         }

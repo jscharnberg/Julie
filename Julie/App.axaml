@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Julie.App"
              xmlns:local="using:Julie"     
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <!--<Application.DataTemplates>
@@ -10,9 +10,30 @@
     </Application.DataTemplates>-->
   
     <Application.Styles>
+		<FluentTheme>
+			<FluentTheme.Palettes>
+				<ColorPaletteResources x:Key="Light" Accent="#fff2522e" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ff1f98a6" BaseMedium="#ff0c6474" BaseMediumHigh="#ff004153" BaseMediumLow="#ff065264" ChromeAltLow="#ff004153" ChromeBlackHigh="Black" ChromeBlackLow="#ff1f98a6" ChromeBlackMedium="#ff004153" ChromeBlackMediumLow="#ff0c6474" ChromeDisabledHigh="#ff1f98a6" ChromeDisabledLow="#ff0c6474" ChromeGray="#ff065264" ChromeHigh="#ff1f98a6" ChromeLow="#ff9adce3" ChromeMedium="#ff81ced7" ChromeMediumLow="#ff9adce3" ChromeWhite="White" ListLow="#ff81ced7" ListMedium="#ff1f98a6" RegionColor="#fff2f2f2" />
+				<ColorPaletteResources x:Key="Dark" Accent="#fff2522e" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff1f98a6" BaseMedium="#ff81ced7" BaseMediumHigh="#ff9adce3" BaseMediumLow="#ff50b3be" ChromeAltLow="#ff9adce3" ChromeBlackHigh="Black" ChromeBlackLow="#ff9adce3" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff1f98a6" ChromeDisabledLow="#ff81ced7" ChromeGray="#ff69c1cb" ChromeHigh="#ff69c1cb" ChromeLow="#ff065264" ChromeMedium="#ff0c6474" ChromeMediumLow="#ff198795" ChromeWhite="White" ListLow="#ff0c6474" ListMedium="#ff1f98a6" RegionColor="#262738" />
+			</FluentTheme.Palettes>
+		</FluentTheme>
+		
 		<Style Selector="Window">
 			<Setter Property="Icon" Value="avares://Julie/Assets/Logo_Orange_Transparent.ico"/>
 		</Style>
-        <FluentTheme />
-    </Application.Styles>
+
+		<Style Selector="ListBox">
+			<Setter Property="Background" Value="{DynamicResource RegionColor}" />
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BorderBrush" Value="#888888" />
+			<Setter Property="Margin" Value ="0, 0, 10, 0"/>
+		</Style>
+
+		
+	</Application.Styles>
+
+	<Application.Resources>
+		<SolidColorBrush x:Key="ErrorBrush" Color="#F44336"/>
+		<SolidColorBrush x:Key="WarningBrush" Color="#FFC107"/>
+		<SolidColorBrush x:Key="InfoBrush" Color="#4FC3F7"/>
+	</Application.Resources>
 </Application>

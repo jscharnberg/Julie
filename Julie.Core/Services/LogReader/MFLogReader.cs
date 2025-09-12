@@ -11,7 +11,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Julie.Core.Services.LogReader
 {
-    public class CotasLogReader : ILogReader
+    public class MFLogReader : ILogReader
     {
         public IEnumerable<LogEntry> ReadFile(string filePath)
         {
@@ -41,7 +41,7 @@ namespace Julie.Core.Services.LogReader
                 // 2. Rest nach Kommas splitten
                 var parts = rest.Split(',', StringSplitOptions.TrimEntries);
                 if (parts.Length < 5)
-                    continue; // weil wir template schon separat haben
+                    throw new Exception($"Wrong Logger for MF File - Logger: ");
 
                 if (!int.TryParse(templateClean, out int templateIndex))
                     continue;
@@ -52,7 +52,7 @@ namespace Julie.Core.Services.LogReader
                 string method = string.Empty;
                 string text = string.Empty;
 
-                var methodAndText = parts[5]; // z.B. "CotasConnection::Login: C:\app\client\..."
+                var methodAndText = parts[5]; // z.B. "MFConnection::Login: C:\app\client\..."
                 int doubleColonIndex = methodAndText.IndexOf("::");
 
                 if (doubleColonIndex >= 0)
@@ -61,7 +61,7 @@ namespace Julie.Core.Services.LogReader
                     int colonAfterMethod = methodAndText.IndexOf(':', doubleColonIndex + 2);
                     if (colonAfterMethod >= 0)
                     {
-                        method = methodAndText.Substring(0, colonAfterMethod).Trim();  // "CotasConnection::Login"
+                        method = methodAndText.Substring(0, colonAfterMethod).Trim();  // "MFConnection::Login"
                         text = methodAndText.Substring(colonAfterMethod + 1).Trim();   // "C:\app\client\..."
                     }
                     else

@@ -29,14 +29,30 @@ namespace Julie
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 var settings = JulieSettingsManager.Load();
-                DisableAvaloniaDataAnnotationValidation();
-                desktop.MainWindow = new LogWindow
+                var mainWindow = new LogWindow
                 {
                     DataContext = new LogViewModel(settings),
                 };
+                desktop.MainWindow = mainWindow;
+                
+                if (desktop.Args.Length > 0)
+                {
+                    string filePath = desktop.Args[0];
+                    if (mainWindow.DataContext is LogViewModel vm)
+                    {
+                        vm.LoadLogsAsync(filePath);
+                    }
+                }
+
+                //var settings = JulieSettingsManager.Load();
+                //DisableAvaloniaDataAnnotationValidation();
+                //desktop.MainWindow = new LogWindow
+                //{
+                //    DataContext = new LogViewModel(settings),
+                //};
             }
 
-            base.OnFrameworkInitializationCompleted();
+                base.OnFrameworkInitializationCompleted();
         }
 
         private void DisableAvaloniaDataAnnotationValidation()

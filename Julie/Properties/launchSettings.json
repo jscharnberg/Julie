@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Julie": {
+      "commandName": "Project"
+    },
+    "Julie mit Cotas Log Pfad": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Cotas\\Log\\B2BManager\\B2BManager#0.tlg"
+    },
+    "Julie mit SeriLog ": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\scharnberg\\AppData\\Roaming\\Julie\\logs\\log-20250912.log"
+    }
+  }
+}

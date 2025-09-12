@@ -14,6 +14,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ namespace Julie.ViewModels
 {
     public partial class LogViewModel : ObservableObject
     {
+        private JulieSettings _settings;
         public string ProjectName { get; } = AppDomain.CurrentDomain.FriendlyName;
         private readonly ILogger _logger = Log.ForContext<LogViewModel>();
 
@@ -94,45 +97,7 @@ namespace Julie.ViewModels
 
         public LogViewModel(JulieSettings settings)
         {
-            foreach (var loggerName in settings.AvailableLoggers)
-            {
-                switch (loggerName)
-                {
-                    case "Cotas":
-                        LogReaderOptions.Add(new LogReaderOption { Name = "Cotas Logger", Reader = new CotasLogReader() });
-                        break;
-
-                    case "Serilog":
-                        LogReaderOptions.Add(new LogReaderOption
-                        {
-                            Name = "Serilog",
-                            Reader = new SerilogLogReader(settings.Template,
-                                RegexOptions.Compiled | RegexOptions.CultureInvariant)
-                        });
-                        break;
-                }
-            }
-
-            SelectedLogReader = LogReaderOptions.FirstOrDefault(r => r.Name == settings.LoggerType)
-                            ?? LogReaderOptions.First();
-            //            LogReaderOptions.Add(new LogReaderOption { Name = "Cotas Logger", Reader = new CotasLogReader() });
-
-            //            LogReaderOptions.Add(new LogReaderOption
-            //            {
-            //                Name = "Serilog",
-            //                Reader = new SerilogLogReader(
-            //            @"^(?<Timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [+-]\d{2}:\d{2}) " +
-            //@"\[(?<Level>[A-Z]{3})\] " +
-            //@"\((?<SourceContext>.*?)\) " +           // SourceContext kann leer sein
-            //@"\((?<Method>.*?):?(?<Line>\d*)\) " +  // Method und Line optional
-            //@"(?<Message>.*)$"
-            //,
-            //        RegexOptions.Compiled | RegexOptions.CultureInvariant
-            //    )
-            //            });
-
-
-            //SelectedLogReader = LogReaderOptions[0];
+            _settings = settings;
 
             Logs.CollectionChanged += (s, e) => OnLogsChanged();
 
@@ -277,6 +242,24 @@ namespace Julie.ViewModels
             catch (Exception ex)
             {
                 _logger.Error(ex, "Fehler beim Laden von Log-Dateien");
+
+                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+            desktop.MainWindow is Window mainWindow)
+                {
+                    var dialog = new Window
+                    {
+                        Title = "Fehler",
+                        Width = 400,
+                        Height = 150,
+                        Content = new TextBlock
+                        {
+                            Text = $"Fehler beim Laden der Log-Datei:\n{ex.Message}",
+                            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                            Margin = new Thickness(10)
+                        }
+                    };
+                    await dialog.ShowDialog(mainWindow);
+                }
             }
             
         }
@@ -326,6 +309,12 @@ namespace Julie.ViewModels
                 }
 
                 CurrentFilePath = filePath;
+
+                SelectedLogReader = new LogReaderOption
+                {
+                    Name = Path.GetFileName(filePath), // oder Serilog/MF je nach Erkennung
+                    Reader = DetermineLogReader(filePath, _settings.SeriLogTemplate)
+                };
                 await LoadLogsFromFilesAsync(new[] { filePath });
 
                 WatchFile(filePath);
@@ -333,6 +322,24 @@ namespace Julie.ViewModels
             catch (Exception ex)
             {
                 _logger.Error(ex, "Fehler beim Laden einer Log Datei");
+
+                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+            desktop.MainWindow is Window mainWindow)
+                {
+                    var dialog = new Window
+                    {
+                        Title = "Fehler",
+                        Width = 400,
+                        Height = 150,
+                        Content = new TextBlock
+                        {
+                            Text = $"Fehler beim Laden der Log-Datei:\n{ex.Message}",
+                            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                            Margin = new Thickness(10)
+                        }
+                    };
+                    await dialog.ShowDialog(mainWindow);
+                }
             }
         }
 
@@ -362,9 +369,46 @@ namespace Julie.ViewModels
             catch (Exception ex)
             {
                 _logger.Error(ex, "Fehler beim Laden eines Log-Ordners");
+
+                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+            desktop.MainWindow is Window mainWindow)
+                {
+                    var dialog = new Window
+                    {
+                        Title = "Fehler",
+                        Width = 400,
+                        Height = 150,
+                        Content = new TextBlock
+                        {
+                            Text = $"Fehler beim Laden der Log-Dateien:\n{ex.Message}",
+                            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                            Margin = new Thickness(10)
+                        }
+                    };
+                    await dialog.ShowDialog(mainWindow);
+                }
             }
         }
 
-        
+        private ILogReader DetermineLogReader(string filePath, string templatePattern)
+        {
+            var firstLine = File.ReadLines(filePath).FirstOrDefault();
+            if (string.IsNullOrEmpty(firstLine))
+                throw new Exception("Datei ist leer.");
+
+            // Serilog-Muster erkennen
+            if (Regex.IsMatch(firstLine, @"\[\w{3}\]"))
+            {
+                return new SerilogLogReader(templatePattern, RegexOptions.Compiled | RegexOptions.CultureInvariant);
+            }
+
+            // MFLog/Cotas erkennen (z. B. beginnt mit @ oder Zahl)
+            if (Regex.IsMatch(firstLine, @"^@\d+"))
+            {
+                return new MFLogReader();
+            }
+
+            throw new Exception("Kein passender LogReader gefunden.");
+        }
     }
 }

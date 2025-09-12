@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Julie
@@ -19,10 +20,7 @@ namespace Julie
         [STAThread]
         public static void Main(string[] args)
         {
-
-            var logPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Julie", "logs", "log-.log");
+            string logPath = GetLogPath();            
 
             Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
 
@@ -30,9 +28,8 @@ namespace Julie
                 .MinimumLevel.Debug()
                 .WriteTo.File(
                     logPath,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] ({SourceContext}) ({Method}:{CallerLineNumber}) {Message:lj}{NewLine}{Exception}",
-                    rollingInterval: RollingInterval.Day, 
-                    retainedFileCountLimit: 7, 
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 7,
                     rollOnFileSizeLimit: true)
                 .CreateLogger();
 
@@ -51,6 +48,7 @@ namespace Julie
                 Log.CloseAndFlush();
             }
 
+
         }
         //=> BuildAvaloniaApp()
         //    .StartWithClassicDesktopLifetime(args);
@@ -61,5 +59,29 @@ namespace Julie
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace();
+
+        private static string GetLogPath()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                {
+                    return Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "Julie", "logs", "log-.log");
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                    "Library", "Application Support", "Julie", "logs", "log-.log");
+            }
+            else // Linux / andere
+            {
+                return Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                    ".local", "share", "Julie", "logs", "log-.log");
+            }
+        }
     }
 }

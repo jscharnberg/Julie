@@ -1,47 +1,57 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Version>1.0.0</Version>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
-  <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
+		<ApplicationIcon>Assets/Logo_Orange_Transparent.ico</ApplicationIcon>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <AvaloniaXaml Remove="Assets\Themes\DolphinsDark.axaml" />
-  </ItemGroup>
+	<ItemGroup>
+		<AvaloniaResource Include="Assets\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.5" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.5" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.5">
-      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-  </ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Remove="Assets\Ressourcen\Strings.de.resx" />
+	  <EmbeddedResource Remove="Assets\Ressourcen\Strings.resx" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Julie.Core\Julie.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.3.5" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.5" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.5" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.5" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.5">
+			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <AvaloniaResource Update="Assets\Themes\DolphinsDark.axaml">
-      <SubType>Designer</SubType>
-    </AvaloniaResource>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Julie.Core\Julie.Core.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Views\SettingsWindow.axaml.cs">
-      <DependentUpon>SettingsWindow.axaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+	  <AvaloniaResource Update="Assets\Ressourcen\Strings.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Strings.resx</DependentUpon>
+	  </AvaloniaResource>
+	  <AvaloniaResource Update="Assets\Ressourcen\Strings.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+	  </AvaloniaResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Views\SettingsWindow.axaml.cs">
+			<DependentUpon>SettingsWindow.axaml</DependentUpon>
+		</Compile>
+	</ItemGroup>
 </Project>
